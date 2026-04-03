@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Garden Plan — Belfast</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f0e8d8;min-height:100vh}
+
+.header{background:#2d5a1a;color:#f0ead8;padding:14px 16px 12px}
+.header h1{font-size:17px;font-weight:600;margin-bottom:1px}
+.header p{font-size:11px;opacity:.7;font-style:italic}
+
+/* === TWO-COLUMN ON WIDE SCREENS === */
+.layout{display:flex;flex-direction:column}
+@media(min-width:680px){
+  .layout{flex-direction:row;min-height:calc(100vh - 54px)}
+  .left-col{width:340px;flex-shrink:0;border-right:1px solid #d0c8b4;display:flex;flex-direction:column}
+  .right-col{flex:1;overflow-y:auto}
+}
+
+/* === LEFT COL === */
+.left-col{background:#f8f3e8}
+.map-wrap{padding:12px 12px 6px;display:flex;justify-content:center}
+.garden-svg{width:100%;max-width:380px;display:block}
+@media(min-width:680px){.garden-svg{max-width:none}}
+.map-zone{cursor:pointer}
+.map-zone:hover{opacity:.82}
+
+/* Zone selector — horizontal scroll on mobile, vertical list on desktop */
+.zone-label{font-size:10px;color:#8a7050;font-style:italic;padding:4px 12px 0;text-align:center}
+@media(min-width:680px){.zone-label{text-align:left}}
+.zone-strip{display:flex;overflow-x:auto;gap:5px;padding:8px 10px 10px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.zone-strip::-webkit-scrollbar{display:none}
+@media(min-width:680px){
+  .zone-strip{flex-direction:column;overflow-x:visible;overflow-y:auto;flex:1;padding:6px 10px 10px;gap:2px}
+}
+.zpill{flex-shrink:0;display:flex;align-items:center;gap:7px;padding:6px 11px;border-radius:20px;border:1px solid #c8b890;background:#fff;font-size:12px;cursor:pointer;white-space:nowrap;font-family:inherit;color:#3a2a10;transition:all .12s}
+@media(min-width:680px){.zpill{border-radius:6px;white-space:normal;flex-shrink:1}}
+.zpill:hover{background:#ede4d0}
+.zpill.on{background:#2d5a1a;color:#f0ead8;border-color:#1a3a08}
+.zpill .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* === RIGHT COL / INFO === */
+.right-col{background:#fdf9f2}
+.info-wrap{padding:18px 16px}
+@media(min-width:680px){.info-wrap{padding:24px 24px}}
+
+.empty-state{padding:48px 16px;text-align:center;color:#9a8060}
+.empty-state .icon{font-size:36px;margin-bottom:12px;opacity:.5}
+.empty-state p{font-size:13px;font-style:italic;max-width:240px;margin:0 auto;line-height:1.6}
+
+.zone-header{margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid #ddd4bc}
+.zname{font-size:18px;font-weight:600;font-family:Georgia,serif;color:#1a1208;margin-bottom:4px}
+.zaspect{font-size:11.5px;color:#8a6030;font-style:italic;margin-bottom:10px}
+.zintro{font-size:13px;line-height:1.7;color:#3a2a10}
+
+.plants-label{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:#7a6040;margin-bottom:10px;font-weight:600}
+.plant-grid{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:480px){.plant-grid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}}
+
+.pcard{background:#f8f3e8;border:1px solid #ddd4bc;border-radius:8px;padding:13px 13px 11px 16px;border-left:3px solid #5a8c38}
+.pname{font-size:14px;font-weight:600;font-family:Georgia,serif;color:#1a1208;margin-bottom:2px}
+.platin{font-size:11px;font-style:italic;color:#8a6840;margin-bottom:8px}
+.pbadge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;margin:0 4px 6px 0}
+.ptype{background:#d8eec8;color:#1a4008;border:1px solid #b0d090}
+.pseas{background:#f4e4c0;color:#6a3808;border:1px solid #dcc090}
+.pnote{font-size:12.5px;line-height:1.65;color:#3a2a10}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Garden Planting Plan</h1>
+  <p>Belfast · tap a zone on the map to explore recommendations</p>
+</div>
+
+<div class="layout">
+
+  <!-- LEFT: map + zone selector -->
+  <div class="left-col">
+    <div class="map-wrap">
+      <svg class="garden-svg" viewBox="0 0 310 510" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="0" width="310" height="16" fill="#C4C0B8"/>
+        <rect x="0" y="16" width="302" height="96" fill="#EDE7DA"/>
+        <rect x="0" y="112" width="222" height="192" fill="#B2ACA4"/>
+        <rect x="222" y="118" width="80" height="234" fill="#DDD9CF"/>
+        <rect x="0" y="304" width="222" height="48" fill="#C8C2B6"/>
+        <rect x="0" y="352" width="185" height="142" fill="#D0EAB8"/>
+        <rect x="185" y="352" width="117" height="122" fill="#9E9990"/>
+        <rect x="200" y="474" width="80" height="18" fill="#888070" opacity="0.65"/>
+        <!-- Zone 1: Railing bed (west 2/3) -->
+        <g class="map-zone" id="mz-railing" data-z="railing">
+          <rect x="12" y="16" width="163" height="28" fill="#F5C0AC" stroke="#A05030" stroke-width="0.5"/>
+          <line x1="24" y1="16" x2="24" y2="44" stroke="#7A3018" stroke-width="0.7" opacity="0.5"/>
+          <line x1="36" y1="16" x2="36" y2="44" stroke="#7A3018" stroke-width="0.7" opacity="0.5"/>
+          <line x1="48" y1="16" x2="48" y2="44" stroke="#7A3018" stroke-width="0.7" opacity="0.5"/>
+          <line x1="60" y1="16" x2="60" y2="44" stroke="#7A3018" stroke-width="0.7" opacity="0.5"/>
+          <line x1="72" y1="16" x2="72" y2="44" stroke="#7A3018" stroke-width="0.7" opacity="0.5"/>
+          <line x1="84" y1="16" x2="84" y2="44" stroke="#7A3018" stroke-width="0.7" opacity="0.5"/>
+          <line x1="96" y1="16" x2="96" y2="44" stroke="#7A3018" stroke-width="0.7" opacity="0.5"/>
+          <line x1="108" y1="16" x2="108" y2="44" stroke="#7A3018" stroke-width="0.7" opacity="0.5"/>
+          <line x1="120" y1="16" x2="120" y2="44" stroke="#7A3018" stroke-width="0.7" opacity="0.5"/>
+          <line x1="132" y1="16" x2="132" y2="44" stroke="#7A3018" stroke-width="0.7" opacity="0.5"/>
+          <line x1="144" y1="16" x2="144" y2="44" stroke="#7A3018" stroke-width="0.7" opacity="0.5"/>
+          <line x1="156" y1="16" x2="156" y2="44" stroke="#7A3018" stroke-width="0.7" opacity="0.5"/>
+          <line x1="168" y1="16" x2="168" y2="44" stroke="#7A3018" stroke-width="0.7" opacity="0.5"/>
+          <text x="93" y="33" font-size="6" fill="#7A3820" font-family="system-ui,sans-serif" text-anchor="middle">RAILING BED</text>
+        </g>
+        <!-- Driveway opening label -->
+        <text x="223" y="29" font-size="6" fill="#A09C92" font-family="system-ui,sans-serif" text-anchor="middle" font-style="italic">driveway</text>
+        <!-- Brick pillar -->
+        <rect x="272" y="16" width="30" height="28" fill="#BF7850" stroke="#8A4820" stroke-width="0.5"/>
+        <line x1="272" y1="25" x2="302" y2="25" stroke="#8A4820" stroke-width="0.6" opacity="0.5"/>
+        <line x1="272" y1="34" x2="302" y2="34" stroke="#8A4820" stroke-width="0.6" opacity="0.5"/>
+        <line x1="287" y1="16" x2="287" y2="44" stroke="#8A4820" stroke-width="0.6" opacity="0.4"/>
+        <!-- Zone 2: Cherry -->
+        <g class="map-zone" id="mz-cherry" data-z="cherry">
+          <rect x="12" y="30" width="44" height="58" fill="#FBEAF2" stroke="#C098A8" stroke-width="0.5"/>
+          <circle cx="34" cy="53" r="14" fill="#F4AECA" opacity="0.72" stroke="#CC7A98" stroke-width="0.7"/>
+          <circle cx="26" cy="47" r="9" fill="#FAC8DC" opacity="0.6"/>
+          <circle cx="42" cy="45" r="8" fill="#F4B8CC" opacity="0.65"/>
+          <line x1="34" y1="67" x2="34" y2="78" stroke="#6A3828" stroke-width="1.5"/>
+          <line x1="34" y1="76" x2="26" y2="84" stroke="#6A3828" stroke-width="1"/>
+          <line x1="34" y1="76" x2="42" y2="83" stroke="#6A3828" stroke-width="1"/>
+          <text x="34" y="86" font-size="5" fill="#8A4858" font-family="system-ui,sans-serif" text-anchor="middle" font-style="italic">cherry</text>
+        </g>
+        <!-- Zone 3: East fence beds -->
+        <g class="map-zone" id="mz-efence" data-z="efence">
+          <rect x="272" y="44" width="30" height="68" fill="#BED898" stroke="#4E7828" stroke-width="0.5"/>
+          <circle cx="287" cy="60" r="6" fill="#6EA840" opacity="0.7"/>
+          <circle cx="287" cy="80" r="7" fill="#7AB848" opacity="0.65"/>
+          <circle cx="287" cy="100" r="6" fill="#6EA840" opacity="0.7"/>
+          <text x="287" y="78" font-size="6" fill="#2E5C10" font-family="system-ui,sans-serif" text-anchor="middle" transform="rotate(-90,287,78)">E FENCE</text>
+        </g>
+        <!-- Gravel dots -->
+        <circle cx="120" cy="58" r="1" fill="#BDB8A8" opacity="0.5"/>
+        <circle cx="155" cy="47" r="1.2" fill="#BDB8A8" opacity="0.4"/>
+        <circle cx="185" cy="74" r="1" fill="#BDB8A8" opacity="0.5"/>
+        <circle cx="218" cy="55" r="1.2" fill="#BDB8A8" opacity="0.4"/>
+        <circle cx="240" cy="86" r="1" fill="#BDB8A8" opacity="0.5"/>
+        <circle cx="140" cy="92" r="1.2" fill="#BDB8A8" opacity="0.4"/>
+        <circle cx="200" cy="98" r="1" fill="#BDB8A8" opacity="0.5"/>
+        <!-- Zone 4: Bay window bed -->
+        <g class="map-zone" id="mz-baywindow" data-z="baywindow">
+          <rect x="12" y="90" width="136" height="22" fill="#AAD480" stroke="#4E8028" stroke-width="0.5"/>
+          <text x="80" y="104" font-size="6" fill="#285810" font-family="system-ui,sans-serif" text-anchor="middle">bay window bed</text>
+        </g>
+        <!-- Zone 5: Porch -->
+        <g class="map-zone" id="mz-porch" data-z="porch">
+          <rect x="148" y="88" width="74" height="24" fill="#9EDBC8" stroke="#349878" stroke-width="0.8"/>
+          <text x="185" y="101" font-size="6.5" fill="#1A5840" font-family="system-ui,sans-serif" text-anchor="middle">PORCH</text>
+          <text x="185" y="109" font-size="5" fill="#2A6848" font-family="system-ui,sans-serif" text-anchor="middle">baskets + pots</text>
+        </g>
+        <!-- Zone 6: East side -->
+        <g class="map-zone" id="mz-eastside" data-z="eastside">
+          <rect x="222" y="118" width="80" height="234" fill="#D4D0C4" stroke="#9A9490" stroke-width="0.5"/>
+          <line x1="222" y1="146" x2="302" y2="146" stroke="#BCB8AE" stroke-width="0.4"/>
+          <line x1="222" y1="174" x2="302" y2="174" stroke="#BCB8AE" stroke-width="0.4"/>
+          <line x1="222" y1="202" x2="302" y2="202" stroke="#BCB8AE" stroke-width="0.4"/>
+          <line x1="222" y1="230" x2="302" y2="230" stroke="#BCB8AE" stroke-width="0.4"/>
+          <line x1="222" y1="258" x2="302" y2="258" stroke="#BCB8AE" stroke-width="0.4"/>
+          <line x1="222" y1="286" x2="302" y2="286" stroke="#BCB8AE" stroke-width="0.4"/>
+          <line x1="222" y1="314" x2="302" y2="314" stroke="#BCB8AE" stroke-width="0.4"/>
+          <line x1="222" y1="342" x2="302" y2="342" stroke="#BCB8AE" stroke-width="0.4"/>
+          <line x1="249" y1="118" x2="249" y2="352" stroke="#BCB8AE" stroke-width="0.4"/>
+          <line x1="276" y1="118" x2="276" y2="352" stroke="#BCB8AE" stroke-width="0.4"/>
+          <text x="262" y="236" font-size="7" fill="#4A4840" font-family="system-ui,sans-serif" text-anchor="middle" transform="rotate(-90,262,236)">EAST SIDE PAVED</text>
+          <text x="226" y="350" font-size="6" fill="#5A5040" font-family="system-ui,sans-serif">↙ garden</text>
+        </g>
+        <!-- Zone 7: Back patio -->
+        <g class="map-zone" id="mz-patio" data-z="patio">
+          <rect x="0" y="304" width="222" height="48" fill="#C0BAAE" stroke="#8A847A" stroke-width="0.5"/>
+          <line x1="44" y1="304" x2="44" y2="352" stroke="#A8A49C" stroke-width="0.4"/>
+          <line x1="88" y1="304" x2="88" y2="352" stroke="#A8A49C" stroke-width="0.4"/>
+          <line x1="132" y1="304" x2="132" y2="352" stroke="#A8A49C" stroke-width="0.4"/>
+          <line x1="176" y1="304" x2="176" y2="352" stroke="#A8A49C" stroke-width="0.4"/>
+          <line x1="0" y1="328" x2="222" y2="328" stroke="#A8A49C" stroke-width="0.4"/>
+          <text x="74" y="322" font-size="8" fill="#3A3830" font-family="system-ui,sans-serif" text-anchor="middle">BACK PATIO</text>
+          <text x="74" y="336" font-size="5.5" fill="#5A5850" font-family="system-ui,sans-serif" text-anchor="middle" font-style="italic">pots</text>
+        </g>
+        <!-- Zone 8: Lawn -->
+        <g class="map-zone" id="mz-lawn" data-z="lawn">
+          <rect x="0" y="352" width="185" height="142" fill="#C8E8A4" stroke="#5A8830" stroke-width="0.5"/>
+          <line x1="30" y1="352" x2="30" y2="494" stroke="#A8CC84" stroke-width="0.4" opacity="0.5"/>
+          <line x1="65" y1="352" x2="65" y2="494" stroke="#A8CC84" stroke-width="0.4" opacity="0.5"/>
+          <line x1="100" y1="352" x2="100" y2="494" stroke="#A8CC84" stroke-width="0.4" opacity="0.5"/>
+          <line x1="140" y1="352" x2="140" y2="494" stroke="#A8CC84" stroke-width="0.4" opacity="0.5"/>
+          <circle cx="40" cy="468" r="11" fill="#3A6820" opacity="0.5"/>
+          <circle cx="68" cy="475" r="8" fill="#3A6820" opacity="0.45"/>
+          <circle cx="158" cy="471" r="10" fill="#3A6820" opacity="0.5"/>
+          <text x="92" y="420" font-size="8" fill="#1E4A08" font-family="system-ui,sans-serif" text-anchor="middle">BACK GARDEN</text>
+          <text x="92" y="432" font-size="6" fill="#2E5A10" font-family="system-ui,sans-serif" text-anchor="middle" font-style="italic">lawn · pots</text>
+        </g>
+        <!-- Structural overlays -->
+        <rect x="0" y="16" width="12" height="96" fill="#24501C"/>
+        <rect x="302" y="0" width="8" height="510" fill="#5C3818"/>
+        <rect x="0" y="304" width="12" height="198" fill="#24501C"/>
+        <rect x="12" y="494" width="198" height="10" fill="#5C3818"/>
+        <rect x="222" y="112" width="80" height="6" fill="#5C3818"/>
+        <!-- House -->
+        <rect x="6" y="118" width="210" height="180" fill="#A89E96"/>
+        <text x="111" y="210" font-size="9" fill="#E8E0D4" font-family="system-ui,sans-serif" text-anchor="middle" letter-spacing="1">HOUSE</text>
+        <rect x="12" y="300" width="130" height="4" fill="#C0B090"/>
+        <text x="77" y="314" font-size="5.5" fill="#6A5C48" font-family="system-ui,sans-serif" text-anchor="middle" font-style="italic">bifold doors</text>
+        <rect x="148" y="304" width="74" height="24" fill="#9A8E86" stroke="#7A6E68" stroke-width="0.5"/>
+        <!-- Labels -->
+        <circle cx="284" cy="11" r="9" fill="#F8F4EC" stroke="#3A5A20" stroke-width="1"/>
+        <text x="284" y="15" font-size="8" text-anchor="middle" fill="#3A5A20" font-family="system-ui,sans-serif" font-weight="500">N</text>
+        <text x="93" y="11" font-size="7" text-anchor="middle" fill="#8A8680" font-family="system-ui,sans-serif" letter-spacing="1">STREET · NORTH</text>
+        <text x="228" y="110" font-size="5.5" fill="#5C3818" font-family="system-ui,sans-serif" font-style="italic">gate</text>
+        <text x="244" y="415" font-size="8" fill="#D0C8C0" font-family="system-ui,sans-serif" text-anchor="middle">GARAGE</text>
+        <text x="240" y="484" font-size="5.5" fill="#706860" font-family="system-ui,sans-serif" text-anchor="middle" font-style="italic">oil tank</text>
+      </svg>
+    </div>
+
+    <p class="zone-label">tap a zone ↑ or choose below</p>
+    <div class="zone-strip" id="zstrip"></div>
+  </div>
+
+  <!-- RIGHT: plant info -->
+  <div class="right-col">
+    <div class="info-wrap">
+      <div class="empty-state" id="em">
+        <div class="icon">🌿</div>
+        <p>Tap a zone on the map or select from the list to see planting recommendations</p>
+      </div>
+      <div id="zc" style="display:none"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var zones=[
+{id:'railing',name:'Iron railing & wall bed',color:'#F5C0AC'},
+{id:'cherry',name:'Cherry blossom corner',color:'#F4AECA'},
+{id:'efence',name:'East fence beds (front)',color:'#BED898'},
+{id:'baywindow',name:'Bay window bed',color:'#AAD480'},
+{id:'porch',name:'Porch — baskets & pots',color:'#9EDBC8'},
+{id:'eastside',name:'East side paved area',color:'#D4D0C4'},
+{id:'patio',name:'Back patio',color:'#C0BAAE'},
+{id:'lawn',name:'Back garden — pots',color:'#C8E8A4'}
+];
+var D={
+railing:{a:'North boundary · west 2/3 · brick wall + iron railing · Belfast, north-facing',i:'The railing and wall bed runs the west two-thirds of the north boundary, ending at the driveway opening. A brick pillar marks the east end of the railing and the north corner of the east fence bed. The bed gets almost no direct sun year-round — the 2-storey house to the south casts an extremely long shadow northward at Belfast\'s latitude (54.6°N). Focus on shade-tolerant plants with winter interest and fragrance.',p:[
+{n:'Climbing Hydrangea',l:'Hydrangea petiolaris',t:'Climber',s:'Jun–Aug',o:'Thrives in deep shade and self-clings through iron railings. White lacecap flowers in summer; peeling amber bark through winter. Slow to establish but then magnificent.'},
+{n:'Winter Jasmine',l:'Jasminum nudiflorum',t:'Climber',s:'Nov–Feb',o:'Cheerful yellow flowers through the darkest months. Flexible stems weave naturally through iron railings. Belfast\'s mild winters mean the flowers rarely get frost-damaged.'},
+{n:'Pyracantha',l:'Pyracantha "Saphyr Orange"',t:'Wall shrub',s:'Spring & autumn',o:'White flowers in May, masses of fiery orange berries from September. Thorns add security to the railing; berries persist through winter for birds.'},
+{n:'Snowdrops',l:'Galanthus nivalis',t:'Bulb',s:'Jan–Mar',o:'Plant "in the green" for reliable establishment. In Belfast\'s mild climate they naturalise excellently, spreading year on year to form a carpet beneath the railing.'},
+{n:'Grape Hyacinth',l:'Muscari armeniacum',t:'Bulb',s:'Mar–May',o:'Vivid cobalt-blue spikes following snowdrops in sequence. Naturalise readily in Belfast\'s moist conditions; need no attention once planted.'}
+]},
+cherry:{a:"NW area · against railing wall · deep shade · Belfast",i:'The cherry is planted right against the inner face of the railing wall, giving it shelter from the north. It sits in the deep shade cast by the 2-storey house to the south. The cherry tolerates this well; focus underplanting on species that genuinely thrive in deep, moist shade.',p:[
+{n:'English Bluebells',l:'Hyacinthoides non-scripta',t:'Bulb',s:'Apr–May',o:'A native Irish plant that thrives in Belfast\'s cool, moist climate. Blue-violet bells appear just as blossom ends — a seamless seasonal handover.'},
+{n:'Daffodils',l:'Narcissus "Jetfire"',t:'Bulb',s:'Mar–Apr',o:'A small reflexed variety flowering just before the cherry blossom — two successive spring events in the same corner.'},
+{n:'Bugle',l:'Ajuga reptans "Catlin\'s Giant"',t:'Ground cover',s:'Apr–Jun',o:'Bronze-leaved ground cover with blue-purple flower spikes. Loves Belfast\'s cool, moist conditions and suppresses weeds around the young tree base.'},
+{n:'Daphne',l:'Daphne odora "Aureomarginata"',t:'Shrub',s:'Jan–Apr',o:'Intensely fragrant pink flowers just before cherry blossom. Belfast\'s mild winters suit it well — but ensure good drainage as it dislikes waterlogged soil.'},
+{n:'Hellebore',l:'Helleborus x hybridus (deep pink)',t:'Perennial',s:'Jan–Apr',o:'Belfast\'s cool, moist climate is ideal for hellebores. A deep pink variety echoes the cherry and flowers from January — a beautiful preview weeks before the tree blooms.'}
+]},
+efence:{a:'East boundary fence · full depth of front garden · brick pillar at north · very deep shade · Belfast',i:'The brick pillar marks the north end of this bed; it runs south to the E-W gate fence. The beds are in very deep shade — the 2-storey house to the south casts a shadow covering the whole front garden for most of the day. The 4ft east fence adds to this by blocking low-angle morning sun from the east. Belfast\'s cool, moist maritime climate suits the ideal plants for this position perfectly.',p:[
+{n:'Camellia',l:'Camellia japonica "Adolphe Audusson"',t:'Wall shrub',s:'Feb–Apr',o:'Belfast is one of the best places in the UK to grow camellias. The shade here — primarily from the 2-storey house to the south — is exactly what camellias love. Belfast\'s mild winters prevent hard frosts that damage buds, and Ireland\'s acid soils suit them perfectly.'},
+{n:'Hellebore',l:'Helleborus x hybridus (mixed)',t:'Perennial',s:'Jan–Apr',o:'Belfast\'s cool, moist climate is textbook for hellebores. A drift of mixed pinks, plums, and creams along this fence will give colour from January in conditions most plants would refuse.'},
+{n:'Astilbe',l:'Astilbe "Fanal"',t:'Perennial',s:'Jun–Aug',o:'Feathery crimson plumes that thrive in Belfast\'s moist, cool conditions. The high rainfall helps — astilbes love consistent moisture.'},
+{n:'Foxglove',l:'Digitalis purpurea',t:'Biennial',s:'Jun–Jul',o:'A native Irish plant supremely happy in Belfast\'s conditions. Self-seeds prolifically in damp shade. Plant once and they naturalise, giving tall spires every year.'},
+{n:'Male Fern',l:'Dryopteris filix-mas',t:'Fern',s:'Year-round',o:'Belfast\'s mild, wet climate is perfect for ferns. Semi-evergreen and reliable in deep shade. Use as structural backbone filler between flowering perennials through winter.'}
+]},
+baywindow:{a:'North-facing house wall · deepest shade · Belfast · mild maritime climate',i:'The north-facing house wall receives essentially no direct sun at Belfast\'s latitude. However Belfast\'s mild, moist climate opens up excellent options that wouldn\'t survive a colder inland UK winter. The key is evergreen structure that looks good year-round, seen from inside the living room and from the street.',p:[
+{n:'Camellia',l:'Camellia x williamsii "Donation"',t:'Shrub',s:'Feb–Apr',o:'Outstanding for this position in Belfast. The north wall\'s consistent shade suits camellias perfectly, and Belfast\'s mild winters mean the spectacular semi-double pink blooms rarely get frost-damaged.'},
+{n:'Fatsia',l:'Fatsia japonica',t:'Shrub',s:'Year-round',o:'Bold, glossy, tropical-looking leaves that handle north-facing deep shade better than almost any other shrub. Belfast\'s mild maritime winters mean it rarely suffers.'},
+{n:'Skimmia',l:'Skimmia japonica "Rubella"',t:'Shrub',s:'Winter & spring',o:'Deep red buds held all through winter, opening to fragrant white flowers in spring. Compact, evergreen, and supremely reliable on a north wall.'},
+{n:'Mahonia',l:'Mahonia x media "Charity"',t:'Shrub',s:'Nov–Mar',o:'Architectural spiky foliage and intensely fragrant yellow flower spikes from November to March. Handles deep north-facing shade and Belfast\'s damp winters exceptionally well.'}
+]},
+porch:{a:'NE corner of house · north-facing · sheltered · Belfast — famous for fuchsias',i:'The porch is at the NE corner, a third of the house width, with the brick pillar just visible to the north. North-facing and sheltered — exactly the conditions where Belfast\'s maritime climate gives a real advantage. Fuchsias are legendary in Ireland, often surviving outdoors year-round in sheltered positions.',p:[
+{n:'Fuchsia',l:'Fuchsia "Ballet Girl"',t:'Often overwinters outdoors in Belfast',s:'Jun–Oct (or longer)',o:'Belfast\'s mild maritime climate means fuchsias often survive outdoors year-round in sheltered positions. In Ireland they grow to a size rarely seen in mainland Britain. Ballet Girl has extraordinary double flowers in white and pink.'},
+{n:'Trailing Begonia',l:'Begonia x tuberhybrida pendula',t:'Tender perennial',s:'Jun–Oct',o:'Genuinely prefer a shaded position — a north-facing Belfast porch is ideal. The cool, moist summers suit them and prevent the flower scorching seen in hotter climates.'},
+{n:'Hydrangea in pot',l:'Hydrangea macrophylla "Endless Summer"',t:'Shrub in pot',s:'Jun–Sep',o:'Hydrangeas flourish in Belfast\'s cool, moist climate like almost nowhere else. A repeat-flowering mophead in a generous pot handles the north light and looks spectacular.'},
+{n:'Trailing Ivy',l:'Hedera helix "Golden Child"',t:'Evergreen',s:'Year-round',o:'Gold-variegated year-round structural spiller for the hanging baskets. Provides continuity between seasonal changes and looks good in winter when tender plants come inside.'},
+{n:'Busy Lizzie',l:'Impatiens walleriana (mildew-resistant)',t:'Annual',s:'Jun–Oct',o:'Continuous colour in deep shade all summer. Choose a mildew-resistant variety — Belfast\'s high humidity can cause problems with older strains. Modern series like "Beacon" have much better resistance.'}
+]},
+eastside:{a:'East of house · 6–7ft east fence · morning to midday sun · sheltered · Belfast',i:'The 6–7ft east fence blocks very low-angle early morning sun. Between mid-morning and early afternoon this area gets a useful window of light; the 2-storey house to the west casts shade from mid-afternoon. The house wall provides warmth and shelter from Belfast\'s prevailing SW winds.',p:[
+{n:'Climbing Rose',l:'Rosa "Generous Gardener"',t:'Climber',s:'Jun–Oct',o:'Wonderfully fragrant and repeat-flowering. Belfast\'s rainfall can encourage blackspot, so "Generous Gardener" is a good choice for its disease resistance. Good air circulation along the fence helps.'},
+{n:'Clematis',l:'Clematis "The President"',t:'Climber',s:'May–Sep',o:'Deep purple-blue flowers from May through September. Pairs beautifully with the climbing rose. Clematis do very well in Belfast\'s cool, moist conditions.'},
+{n:'Japanese Maple',l:'Acer palmatum "Bloodgood"',t:'Tree in pot',s:'Spring–Autumn',o:'Deep burgundy to brilliant scarlet in autumn. The sheltered east side is ideal — Belfast wind can shred Japanese maple leaves, but this spot is protected from SW winds by the house.'},
+{n:'Hydrangea',l:'Hydrangea aspera "Villosa Group"',t:'Shrub',s:'Jul–Sep',o:'A large-leaved species hydrangea that handles partial shade exceptionally well. Lacecap flowers in soft lilac and white. Belfast\'s moist, mild climate is perfect for hydrangeas of all kinds.'},
+{n:'Rosemary',l:'Salvia rosmarinus "Miss Jessopp\'s Upright"',t:'Herb/shrub',s:'Year-round',o:'Can work in this sheltered spot but needs very good drainage — Belfast\'s high rainfall can cause root rot in heavy soil. Raise the bed or incorporate plenty of grit.'}
+]},
+patio:{a:'South-facing · bifold door area · best light after lawn · Belfast',i:'The back patio is south-facing — the best-lit zone outside the open lawn. In Belfast\'s cloudy maritime climate you\'ll get less sun than a southern UK garden, but south-facing still makes a significant difference. The north edge near the house gets some shadow; the SE house extension creates a sheltered corner on its east side.',p:[
+{n:'Bay Tree (standard)',l:'Laurus nobilis',t:'Evergreen in pot',s:'Year-round',o:'Clipped lollipops flanking the bifold doors give elegant year-round structure. Belfast\'s mild maritime winters mean bay trees rarely need winter protection in a sheltered patio.'},
+{n:'Scented Rose',l:'Rosa "Princess Alexandra of Kent"',t:'Shrub rose in pot',s:'Jun–Oct',o:'Compact and heavily fragrant. Belfast\'s softer light suits roses beautifully — colours are richer and flowers last longer in cool conditions.'},
+{n:'English Lavender',l:'Lavandula angustifolia "Hidcote"',t:'Shrub',s:'Jun–Aug',o:'In Belfast\'s wetter climate, English lavender is a better choice than French or Spanish varieties — more tolerant of moisture and cold. Ensure excellent drainage.'},
+{n:'Agapanthus',l:'Agapanthus "Headbourne Hybrids"',t:'Perennial in pot',s:'Jul–Sep',o:'The hardiest agapanthus available. Mulch heavily in autumn and ensure excellent pot drainage. Keep close to the house wall for protection.'},
+{n:'Scented Pelargonium',l:'Pelargonium "Attar of Roses"',t:'Tender perennial',s:'May–Oct',o:'Rose-scented leaves — extraordinary fragrance when brushed. Belfast\'s mild summers are actually ideal: pelargoniums produce their best fragrance in cool conditions. Overwinter on a warm windowsill.'}
+]},
+lawn:{a:'South-facing open lawn · best light in garden · Belfast maritime climate',i:'Your best-lit space — south-facing and open. Belfast\'s maritime climate brings reliable moisture, which suits many summer performers. The 1-storey garage to the east casts a morning shadow that clears mid-morning. The 5ft west hedge provides shelter from the prevailing SW winds.',p:[
+{n:'Dahlia',l:'Dahlia "Café au Lait"',t:'Tuber in pot',s:'Jul–Oct',o:'The great summer showstopper — enormous blowsy flowers in champagne tones. Belfast\'s cool summers suit dahlias well: heat stress is rarely a problem and colours stay richer longer. Lift tubers in November.'},
+{n:'Japanese Maple',l:'Acer palmatum "Dissectum Garnet"',t:'Tree in pot',s:'Spring–Autumn',o:'Weeping, finely-cut burgundy foliage turning brilliant scarlet in October. Position with some shelter from the west hedge. Belfast\'s mild winters rarely cause the frost damage seen in colder UK gardens.'},
+{n:'Miscanthus',l:'Miscanthus sinensis "Morning Light"',t:'Ornamental grass',s:'Summer–winter',o:'Elegant grass that moves beautifully in Belfast\'s frequent breezes. Extraordinary seedheads persist through the mild winter providing structure when other plants have died back.'},
+{n:'Honeysuckle',l:'Lonicera periclymenum "Serotina"',t:'Climber on fence',s:'Jun–Oct',o:'Train along the south fence. Belfast\'s cool, moist climate is ideal — the evening fragrance is extraordinary, and in cool conditions the flowers last far longer than in hot summers.'},
+{n:'Crocosmia',l:'Crocosmia "Lucifer"',t:'Corm',s:'Jul–Sep',o:'Vivid flame-red arching sprays. So well-suited to Belfast\'s mild, moist maritime climate that it has naturalised across much of Ireland. Almost zero maintenance once established.'}
+]}
+};
+
+var cur=null;
+function sel(id){
+  if(cur){
+    var pe=document.getElementById('mz-'+cur);
+    if(pe){var pr=pe.querySelector('rect');if(pr&&pr.dataset.os!==undefined){pr.setAttribute('stroke',pr.dataset.os);pr.setAttribute('stroke-width',pr.dataset.ow);}}
+    document.querySelectorAll('.zpill').forEach(function(b){b.classList.remove('on');});
+  }
+  cur=id;
+  var el=document.getElementById('mz-'+id);
+  if(el){var r=el.querySelector('rect');if(r){if(r.dataset.os===undefined){r.dataset.os=r.getAttribute('stroke')||'none';r.dataset.ow=r.getAttribute('stroke-width')||'0.5';}r.setAttribute('stroke','#BA7517');r.setAttribute('stroke-width','2.5');}}
+  document.querySelectorAll('.zpill[data-z="'+id+'"]').forEach(function(b){b.classList.add('on');});
+  var z=zones.find(function(z){return z.id===id;});
+  var d=D[id];
+  document.getElementById('em').style.display='none';
+  var zc=document.getElementById('zc');
+  zc.style.display='block';
+  zc.innerHTML='<div class="zone-header"><div class="zname">'+z.name+'</div><div class="zaspect">'+d.a+'</div><div class="zintro">'+d.i+'</div></div><div class="plants-label">Recommended plants</div><div class="plant-grid">'+d.p.map(function(p){return '<div class="pcard"><div class="pname">'+p.n+'</div><div class="platin">'+p.l+'</div><span class="pbadge ptype">'+p.t+'</span><span class="pbadge pseas">'+p.s+'</span><div class="pnote">'+p.o+'</div></div>';}).join('')+'</div>';
+  // scroll info into view on mobile
+  if(window.innerWidth<680){
+    setTimeout(function(){document.querySelector('.right-col').scrollIntoView({behavior:'smooth',block:'start'});},100);
+  }
+}
+
+// Build zone strip
+var strip=document.getElementById('zstrip');
+zones.forEach(function(z){
+  var b=document.createElement('button');
+  b.className='zpill';b.dataset.z=z.id;
+  b.innerHTML='<span class="dot" style="background:'+z.color+'"></span>'+z.name;
+  b.addEventListener('click',function(){sel(z.id);});
+  strip.appendChild(b);
+});
+
+// Map zone click handlers
+document.querySelectorAll('.map-zone').forEach(function(el){
+  el.addEventListener('click',function(){sel(el.dataset.z);});
+});
+</script>
+</body>
+</html>
