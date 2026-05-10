@@ -62,7 +62,15 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#f0e8d8;min-heigh
 .plant-grid{display:grid;grid-template-columns:1fr;gap:10px}
 @media(min-width:480px){.plant-grid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}}
 
-.pcard{background:#f8f3e8;border:1px solid #ddd4bc;border-radius:8px;padding:13px 13px 11px 16px;border-left:3px solid #5a8c38}
+.pcard{background:#f8f3e8;border:1px solid #ddd4bc;border-radius:8px;overflow:hidden;border-left:3px solid #5a8c38}
+.pimg-wrap{height:150px;background:#e4dcd0;overflow:hidden;position:relative}
+.pimg-wrap.shimmer{background:linear-gradient(90deg,#e4dcd0 25%,#ede5d8 50%,#e4dcd0 75%);background-size:200% 100%;animation:shimmer 1.4s infinite}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.pimg-wrap.ph{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#d8e8c4,#e8f0d4)}
+.ph-icon{font-size:44px;opacity:.5}
+.pimg{width:100%;height:150px;object-fit:cover;display:block;opacity:0;transition:opacity .3s}
+.pimg.loaded{opacity:1}
+.pcard-body{padding:12px 13px 11px 13px}
 .pname{font-size:14px;font-weight:600;font-family:Georgia,serif;color:#1a1208;margin-bottom:2px}
 .platin{font-size:11px;font-style:italic;color:#8a6840;margin-bottom:8px}
 .pbadge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;margin:0 4px 6px 0}
@@ -92,9 +100,10 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#f0e8d8;min-heigh
         <rect x="0" y="352" width="185" height="142" fill="#D0EAB8"/>
         <rect x="185" y="352" width="117" height="122" fill="#9E9990"/>
         <rect x="200" y="474" width="80" height="18" fill="#888070" opacity="0.65"/>
-        <!-- Zone 1: Railing bed (west 2/3) -->
+
+        <!-- Zone 1: Railing bed — tapered: 110cm deep at west, tapering to nothing at driveway pillar -->
         <g class="map-zone" id="mz-railing" data-z="railing">
-          <rect x="12" y="16" width="163" height="28" fill="#F5C0AC" stroke="#A05030" stroke-width="0.5"/>
+          <polygon points="12,16 175,16 175,18 12,48" fill="#F5C0AC" stroke="#A05030" stroke-width="0.5"/>
           <line x1="24" y1="16" x2="24" y2="44" stroke="#7A3018" stroke-width="0.7" opacity="0.5"/>
           <line x1="36" y1="16" x2="36" y2="44" stroke="#7A3018" stroke-width="0.7" opacity="0.5"/>
           <line x1="48" y1="16" x2="48" y2="44" stroke="#7A3018" stroke-width="0.7" opacity="0.5"/>
@@ -108,26 +117,30 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#f0e8d8;min-heigh
           <line x1="144" y1="16" x2="144" y2="44" stroke="#7A3018" stroke-width="0.7" opacity="0.5"/>
           <line x1="156" y1="16" x2="156" y2="44" stroke="#7A3018" stroke-width="0.7" opacity="0.5"/>
           <line x1="168" y1="16" x2="168" y2="44" stroke="#7A3018" stroke-width="0.7" opacity="0.5"/>
-          <text x="93" y="33" font-size="6" fill="#7A3820" font-family="system-ui,sans-serif" text-anchor="middle">RAILING BED</text>
+          <text x="70" y="36" font-size="6" fill="#7A3820" font-family="system-ui,sans-serif" text-anchor="middle">RAILING BED</text>
         </g>
+
         <!-- Driveway opening label -->
         <text x="223" y="29" font-size="6" fill="#A09C92" font-family="system-ui,sans-serif" text-anchor="middle" font-style="italic">driveway</text>
+
         <!-- Brick pillar -->
         <rect x="272" y="16" width="30" height="28" fill="#BF7850" stroke="#8A4820" stroke-width="0.5"/>
         <line x1="272" y1="25" x2="302" y2="25" stroke="#8A4820" stroke-width="0.6" opacity="0.5"/>
         <line x1="272" y1="34" x2="302" y2="34" stroke="#8A4820" stroke-width="0.6" opacity="0.5"/>
         <line x1="287" y1="16" x2="287" y2="44" stroke="#8A4820" stroke-width="0.6" opacity="0.4"/>
-        <!-- Zone 2: Cherry -->
+
+        <!-- Zone 2: Cherry blossom corner (NW — also north end of west boundary bed) -->
         <g class="map-zone" id="mz-cherry" data-z="cherry">
-          <rect x="12" y="30" width="44" height="58" fill="#FBEAF2" stroke="#C098A8" stroke-width="0.5"/>
-          <circle cx="34" cy="53" r="14" fill="#F4AECA" opacity="0.72" stroke="#CC7A98" stroke-width="0.7"/>
-          <circle cx="26" cy="47" r="9" fill="#FAC8DC" opacity="0.6"/>
-          <circle cx="42" cy="45" r="8" fill="#F4B8CC" opacity="0.65"/>
-          <line x1="34" y1="67" x2="34" y2="78" stroke="#6A3828" stroke-width="1.5"/>
-          <line x1="34" y1="76" x2="26" y2="84" stroke="#6A3828" stroke-width="1"/>
-          <line x1="34" y1="76" x2="42" y2="83" stroke="#6A3828" stroke-width="1"/>
-          <text x="34" y="86" font-size="5" fill="#8A4858" font-family="system-ui,sans-serif" text-anchor="middle" font-style="italic">cherry</text>
+          <rect x="14" y="30" width="44" height="58" fill="#FBEAF2" stroke="#C098A8" stroke-width="0.5"/>
+          <circle cx="36" cy="53" r="14" fill="#F4AECA" opacity="0.72" stroke="#CC7A98" stroke-width="0.7"/>
+          <circle cx="28" cy="47" r="9" fill="#FAC8DC" opacity="0.6"/>
+          <circle cx="44" cy="45" r="8" fill="#F4B8CC" opacity="0.65"/>
+          <line x1="36" y1="67" x2="36" y2="78" stroke="#6A3828" stroke-width="1.5"/>
+          <line x1="36" y1="76" x2="28" y2="84" stroke="#6A3828" stroke-width="1"/>
+          <line x1="36" y1="76" x2="44" y2="83" stroke="#6A3828" stroke-width="1"/>
+          <text x="36" y="86" font-size="5" fill="#8A4858" font-family="system-ui,sans-serif" text-anchor="middle" font-style="italic">cherry</text>
         </g>
+
         <!-- Zone 3: East fence beds -->
         <g class="map-zone" id="mz-efence" data-z="efence">
           <rect x="272" y="44" width="30" height="68" fill="#BED898" stroke="#4E7828" stroke-width="0.5"/>
@@ -136,6 +149,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#f0e8d8;min-heigh
           <circle cx="287" cy="100" r="6" fill="#6EA840" opacity="0.7"/>
           <text x="287" y="78" font-size="6" fill="#2E5C10" font-family="system-ui,sans-serif" text-anchor="middle" transform="rotate(-90,287,78)">E FENCE</text>
         </g>
+
         <!-- Gravel dots -->
         <circle cx="120" cy="58" r="1" fill="#BDB8A8" opacity="0.5"/>
         <circle cx="155" cy="47" r="1.2" fill="#BDB8A8" opacity="0.4"/>
@@ -144,17 +158,21 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#f0e8d8;min-heigh
         <circle cx="240" cy="86" r="1" fill="#BDB8A8" opacity="0.5"/>
         <circle cx="140" cy="92" r="1.2" fill="#BDB8A8" opacity="0.4"/>
         <circle cx="200" cy="98" r="1" fill="#BDB8A8" opacity="0.5"/>
-        <!-- Zone 4: Bay window bed -->
+
+        <!-- Zone 4: Bay window — now raised porch (pots only, no bed) -->
         <g class="map-zone" id="mz-baywindow" data-z="baywindow">
-          <rect x="12" y="90" width="136" height="22" fill="#AAD480" stroke="#4E8028" stroke-width="0.5"/>
-          <text x="80" y="104" font-size="6" fill="#285810" font-family="system-ui,sans-serif" text-anchor="middle">bay window bed</text>
+          <rect x="14" y="90" width="134" height="22" fill="#D4B896" stroke="#8A6830" stroke-width="0.7"/>
+          <line x1="14" y1="90" x2="148" y2="90" stroke="#A07848" stroke-width="1.2"/>
+          <text x="81" y="104" font-size="6" fill="#5A3818" font-family="system-ui,sans-serif" text-anchor="middle">raised porch · pots</text>
         </g>
+
         <!-- Zone 5: Porch -->
         <g class="map-zone" id="mz-porch" data-z="porch">
           <rect x="148" y="88" width="74" height="24" fill="#9EDBC8" stroke="#349878" stroke-width="0.8"/>
           <text x="185" y="101" font-size="6.5" fill="#1A5840" font-family="system-ui,sans-serif" text-anchor="middle">PORCH</text>
           <text x="185" y="109" font-size="5" fill="#2A6848" font-family="system-ui,sans-serif" text-anchor="middle">baskets + pots</text>
         </g>
+
         <!-- Zone 6: East side -->
         <g class="map-zone" id="mz-eastside" data-z="eastside">
           <rect x="222" y="118" width="80" height="234" fill="#D4D0C4" stroke="#9A9490" stroke-width="0.5"/>
@@ -171,6 +189,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#f0e8d8;min-heigh
           <text x="262" y="236" font-size="7" fill="#4A4840" font-family="system-ui,sans-serif" text-anchor="middle" transform="rotate(-90,262,236)">EAST SIDE PAVED</text>
           <text x="226" y="350" font-size="6" fill="#5A5040" font-family="system-ui,sans-serif">↙ garden</text>
         </g>
+
         <!-- Zone 7: Back patio -->
         <g class="map-zone" id="mz-patio" data-z="patio">
           <rect x="0" y="304" width="222" height="48" fill="#C0BAAE" stroke="#8A847A" stroke-width="0.5"/>
@@ -182,6 +201,7 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#f0e8d8;min-heigh
           <text x="74" y="322" font-size="8" fill="#3A3830" font-family="system-ui,sans-serif" text-anchor="middle">BACK PATIO</text>
           <text x="74" y="336" font-size="5.5" fill="#5A5850" font-family="system-ui,sans-serif" text-anchor="middle" font-style="italic">pots</text>
         </g>
+
         <!-- Zone 8: Lawn -->
         <g class="map-zone" id="mz-lawn" data-z="lawn">
           <rect x="0" y="352" width="185" height="142" fill="#C8E8A4" stroke="#5A8830" stroke-width="0.5"/>
@@ -195,18 +215,21 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#f0e8d8;min-heigh
           <text x="92" y="420" font-size="8" fill="#1E4A08" font-family="system-ui,sans-serif" text-anchor="middle">BACK GARDEN</text>
           <text x="92" y="432" font-size="6" fill="#2E5A10" font-family="system-ui,sans-serif" text-anchor="middle" font-style="italic">lawn · pots</text>
         </g>
+
         <!-- Structural overlays -->
-        <rect x="0" y="16" width="12" height="96" fill="#24501C"/>
+        <rect x="0" y="16" width="10" height="96" fill="#24501C"/>
         <rect x="302" y="0" width="8" height="510" fill="#5C3818"/>
         <rect x="0" y="304" width="12" height="198" fill="#24501C"/>
         <rect x="12" y="494" width="198" height="10" fill="#5C3818"/>
         <rect x="222" y="112" width="80" height="6" fill="#5C3818"/>
+
         <!-- House -->
         <rect x="6" y="118" width="210" height="180" fill="#A89E96"/>
         <text x="111" y="210" font-size="9" fill="#E8E0D4" font-family="system-ui,sans-serif" text-anchor="middle" letter-spacing="1">HOUSE</text>
         <rect x="12" y="300" width="130" height="4" fill="#C0B090"/>
         <text x="77" y="314" font-size="5.5" fill="#6A5C48" font-family="system-ui,sans-serif" text-anchor="middle" font-style="italic">bifold doors</text>
         <rect x="148" y="304" width="74" height="24" fill="#9A8E86" stroke="#7A6E68" stroke-width="0.5"/>
+
         <!-- Labels -->
         <circle cx="284" cy="11" r="9" fill="#F8F4EC" stroke="#3A5A20" stroke-width="1"/>
         <text x="284" y="15" font-size="8" text-anchor="middle" fill="#3A5A20" font-family="system-ui,sans-serif" font-weight="500">N</text>
@@ -214,6 +237,12 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#f0e8d8;min-heigh
         <text x="228" y="110" font-size="5.5" fill="#5C3818" font-family="system-ui,sans-serif" font-style="italic">gate</text>
         <text x="244" y="415" font-size="8" fill="#D0C8C0" font-family="system-ui,sans-serif" text-anchor="middle">GARAGE</text>
         <text x="240" y="484" font-size="5.5" fill="#706860" font-family="system-ui,sans-serif" text-anchor="middle" font-style="italic">oil tank</text>
+
+        <!-- Zone 9: West boundary bed — drawn last so it sits on top of hedge overlay and is clickable -->
+        <g class="map-zone" id="mz-westbed" data-z="westbed">
+          <rect x="10" y="44" width="14" height="68" fill="#B8E090" stroke="#4A7820" stroke-width="0.5"/>
+          <text x="17" y="73" font-size="5" fill="#2A5808" font-family="system-ui,sans-serif" text-anchor="middle" transform="rotate(-90,17,73)">W BED</text>
+        </g>
       </svg>
     </div>
 
@@ -238,45 +267,54 @@ body{font-family:system-ui,-apple-system,sans-serif;background:#f0e8d8;min-heigh
 var zones=[
 {id:'railing',name:'Iron railing & wall bed',color:'#F5C0AC'},
 {id:'cherry',name:'Cherry blossom corner',color:'#F4AECA'},
+{id:'westbed',name:'West boundary bed',color:'#B8E090'},
 {id:'efence',name:'East fence beds (front)',color:'#BED898'},
-{id:'baywindow',name:'Bay window bed',color:'#AAD480'},
+{id:'baywindow',name:'Bay window — raised porch',color:'#D4B896'},
 {id:'porch',name:'Porch — baskets & pots',color:'#9EDBC8'},
 {id:'eastside',name:'East side paved area',color:'#D4D0C4'},
 {id:'patio',name:'Back patio',color:'#C0BAAE'},
 {id:'lawn',name:'Back garden — pots',color:'#C8E8A4'}
 ];
 var D={
-railing:{a:'North boundary · west 2/3 · brick wall + iron railing · Belfast, north-facing',i:'The railing and wall bed runs the west two-thirds of the north boundary, ending at the driveway opening. A brick pillar marks the east end of the railing and the north corner of the east fence bed. The bed gets almost no direct sun year-round — the 2-storey house to the south casts an extremely long shadow northward at Belfast\'s latitude (54.6°N). Focus on shade-tolerant plants with winter interest and fragrance.',p:[
-{n:'Climbing Hydrangea',l:'Hydrangea petiolaris',t:'Climber',s:'Jun–Aug',o:'Thrives in deep shade and self-clings through iron railings. White lacecap flowers in summer; peeling amber bark through winter. Slow to establish but then magnificent.'},
-{n:'Winter Jasmine',l:'Jasminum nudiflorum',t:'Climber',s:'Nov–Feb',o:'Cheerful yellow flowers through the darkest months. Flexible stems weave naturally through iron railings. Belfast\'s mild winters mean the flowers rarely get frost-damaged.'},
-{n:'Pyracantha',l:'Pyracantha "Saphyr Orange"',t:'Wall shrub',s:'Spring & autumn',o:'White flowers in May, masses of fiery orange berries from September. Thorns add security to the railing; berries persist through winter for birds.'},
-{n:'Snowdrops',l:'Galanthus nivalis',t:'Bulb',s:'Jan–Mar',o:'Plant "in the green" for reliable establishment. In Belfast\'s mild climate they naturalise excellently, spreading year on year to form a carpet beneath the railing.'},
-{n:'Grape Hyacinth',l:'Muscari armeniacum',t:'Bulb',s:'Mar–May',o:'Vivid cobalt-blue spikes following snowdrops in sequence. Naturalise readily in Belfast\'s moist conditions; need no attention once planted.'}
+railing:{a:'North boundary · west two-thirds · brick wall + iron railing · tapered bed · Belfast, north-facing',i:'The railing bed runs the west two-thirds of the north boundary. The bed depth tapers: about 110cm deep at the western end, narrowing gradually to nothing as it meets the driveway pillar at the east. This gives you much more planting room in the west — use that fuller depth for taller, bolder planting (climbers threading through the railing, larger shrubs) and reserve compact, low ground cover for the narrow eastern end. The 2-storey house to the south casts an extremely long shadow northward at Belfast\'s latitude (54.6°N) — almost no direct sun year-round. The year-round foliage backbone here comes from the pyracantha (fully evergreen) and winter jasmine (semi-evergreen), with sarcococca as an evergreen ground layer in the deeper west end. The climbing hydrangea is deciduous but contributes beautifully textured peeling bark through winter.',p:[
+{n:'Climbing Hydrangea',l:'Hydrangea petiolaris',t:'Climber',s:'Jun–Aug',o:'Emma\'s favourite, and a perfect fit here. Thrives in deep shade and self-clings through iron railings. White lacecap flowers in summer; peeling amber bark through winter. Use the deeper west end where it has room to establish. Slow to start, then spectacular.'},
+{n:'Winter Jasmine',l:'Jasminum nudiflorum',t:'Climber',s:'Nov–Feb',o:'Cheerful yellow flowers through the darkest months. Flexible stems weave naturally through iron railings. Belfast\'s mild winters mean the flowers rarely get frost-damaged. A good choice towards the east end where the bed is narrower — roots don\'t need much depth.'},
+{n:'Pyracantha',l:'Pyracantha "Saphyr Orange"',t:'Wall shrub',s:'Spring & autumn',o:'White flowers in May, masses of fiery orange berries from September. Thorns add security to the railing; berries persist through winter for birds. Site in the deeper west end.'},
+{n:'Ivy',l:'Hedera helix "Glacier"',t:'Evergreen climber',s:'Year-round',o:'The answer to clothing the iron railings in foliage every month of the year. "Glacier" has elegant silver-grey and white variegated leaves that show up beautifully in shade — much more striking than plain green ivy against iron railings. Self-clinging and will weave through the railing structure without any tying in. Works well alongside the climbing hydrangea: ivy covers the railings through winter when the hydrangea is bare.'},
+{n:'Winter Box',l:'Sarcococca hookeriana var. humilis',t:'Evergreen shrub',s:'Dec–Feb (flowers) · year-round foliage',o:'A compact evergreen shrub — one of the finest plants for deep shade and one of the most fragrant things you can grow. Tiny white flowers from December to February fill the garden with a sweet vanilla scent in the darkest months. The glossy leaves hold through all seasons, providing a permanent ground-level structure in the deeper western end of the bed. Spreads slowly and steadily, needing almost no maintenance.'}
 ]},
-cherry:{a:"NW area · against railing wall · deep shade · Belfast",i:'The cherry is planted right against the inner face of the railing wall, giving it shelter from the north. It sits in the deep shade cast by the 2-storey house to the south. The cherry tolerates this well; focus underplanting on species that genuinely thrive in deep, moist shade.',p:[
-{n:'English Bluebells',l:'Hyacinthoides non-scripta',t:'Bulb',s:'Apr–May',o:'A native Irish plant that thrives in Belfast\'s cool, moist climate. Blue-violet bells appear just as blossom ends — a seamless seasonal handover.'},
-{n:'Daffodils',l:'Narcissus "Jetfire"',t:'Bulb',s:'Mar–Apr',o:'A small reflexed variety flowering just before the cherry blossom — two successive spring events in the same corner.'},
-{n:'Bugle',l:'Ajuga reptans "Catlin\'s Giant"',t:'Ground cover',s:'Apr–Jun',o:'Bronze-leaved ground cover with blue-purple flower spikes. Loves Belfast\'s cool, moist conditions and suppresses weeds around the young tree base.'},
-{n:'Daphne',l:'Daphne odora "Aureomarginata"',t:'Shrub',s:'Jan–Apr',o:'Intensely fragrant pink flowers just before cherry blossom. Belfast\'s mild winters suit it well — but ensure good drainage as it dislikes waterlogged soil.'},
+cherry:{a:'NW corner · against the inner face of the railing wall · deep shade · part of west boundary bed · Belfast',i:'The cherry blossom tree sits in the NW corner, where the west boundary bed opens out to over a metre in depth — giving it plenty of room. It sits in the deep shade cast by the 2-storey house to the south, which the cherry tolerates well. The bed here is the widest part of the west boundary, so there\'s room for underplanting with species that genuinely thrive in deep, moist shade.',p:[
+{n:'Heuchera',l:'Heuchera "Midnight Rose"',t:'Perennial',s:'Year-round foliage · May–Jul flowers',o:'Deep burgundy leaves splashed with rose-pink — striking year-round foliage colour that doesn\'t disappear in summer or winter. This fills the gap that bluebells leave when they die back completely after May. Produces small pink flower spikes in early summer and stays compact enough to share the corner comfortably with the cherry. Thrives in cool, moist shade; Belfast\'s climate is ideal.'},
+{n:'Daffodils',l:'Narcissus "Jetfire"',t:'Bulb',s:'Mar–Apr',o:'A small reflexed variety flowering just before the cherry blossom — two successive spring events in the same corner. Compact enough for the widened bed area.'},
+{n:'Bugle',l:'Ajuga reptans "Catlin\'s Giant"',t:'Ground cover',s:'Apr–Jun',o:'Bronze-leaved ground cover with blue-purple flower spikes. Loves Belfast\'s cool, moist conditions and suppresses weeds around the young tree base. Spreads steadily to link with the rest of the west boundary bed.'},
+{n:'Daphne',l:'Daphne odora "Aureomarginata"',t:'Shrub',s:'Jan–Apr',o:'Intensely fragrant pink flowers just before cherry blossom. Belfast\'s mild winters suit it well — but ensure good drainage as it dislikes waterlogged soil. Suited to the wider NW corner.'},
 {n:'Hellebore',l:'Helleborus x hybridus (deep pink)',t:'Perennial',s:'Jan–Apr',o:'Belfast\'s cool, moist climate is ideal for hellebores. A deep pink variety echoes the cherry and flowers from January — a beautiful preview weeks before the tree blooms.'}
 ]},
-efence:{a:'East boundary fence · full depth of front garden · brick pillar at north · very deep shade · Belfast',i:'The brick pillar marks the north end of this bed; it runs south to the E-W gate fence. The beds are in very deep shade — the 2-storey house to the south casts a shadow covering the whole front garden for most of the day. The 4ft east fence adds to this by blocking low-angle morning sun from the east. Belfast\'s cool, moist maritime climate suits the ideal plants for this position perfectly.',p:[
-{n:'Camellia',l:'Camellia japonica "Adolphe Audusson"',t:'Wall shrub',s:'Feb–Apr',o:'Belfast is one of the best places in the UK to grow camellias. The shade here — primarily from the 2-storey house to the south — is exactly what camellias love. Belfast\'s mild winters prevent hard frosts that damage buds, and Ireland\'s acid soils suit them perfectly.'},
-{n:'Hellebore',l:'Helleborus x hybridus (mixed)',t:'Perennial',s:'Jan–Apr',o:'Belfast\'s cool, moist climate is textbook for hellebores. A drift of mixed pinks, plums, and creams along this fence will give colour from January in conditions most plants would refuse.'},
-{n:'Astilbe',l:'Astilbe "Fanal"',t:'Perennial',s:'Jun–Aug',o:'Feathery crimson plumes that thrive in Belfast\'s moist, cool conditions. The high rainfall helps — astilbes love consistent moisture.'},
-{n:'Foxglove',l:'Digitalis purpurea',t:'Biennial',s:'Jun–Jul',o:'A native Irish plant supremely happy in Belfast\'s conditions. Self-seeds prolifically in damp shade. Plant once and they naturalise, giving tall spires every year.'},
-{n:'Male Fern',l:'Dryopteris filix-mas',t:'Fern',s:'Year-round',o:'Belfast\'s mild, wet climate is perfect for ferns. Semi-evergreen and reliable in deep shade. Use as structural backbone filler between flowering perennials through winter.'}
+westbed:{a:'Along west hedge · 30cm deep (opens to 110cm+ in NW corner) · full length of hedge · deep shade · Belfast',i:'A narrow 30cm-deep bed running the full length of the west hedge. Because this bed sits directly in front of a substantial hedge, the hedge itself provides the year-round green backdrop — the planting doesn\'t need to carry the same evergreen burden as the east fence bed, which sits in front of bare fence panels. That frees this bed up to focus more on seasonal fragrance and flower colour. The NW corner — where the cherry blossom is — opens to over a metre and is covered under that zone. Along the narrow 30cm strip, compact spreading plants work best, with the hedge doing the structural heavy lifting behind them.',p:[
+{n:'Ajuga',l:'Ajuga reptans "Atropurpurea"',t:'Ground cover',s:'Apr–Jun',o:'Bronze-purple rosettes carpet the ground and send up blue flower spikes in spring. One of the best plants for exactly this kind of narrow, dry-shaded hedge bed. Spreads steadily in Belfast\'s cool, moist climate to fill the 30cm strip without overstepping it.'},
+{n:'Vinca',l:'Vinca minor "Atropurpurea"',t:'Ground cover',s:'Apr–Jun (sporadic to Sep)',o:'Deep purple flowers above small evergreen leaves. Highly tolerant of dry shade under hedge roots — one of the few plants that genuinely thrives in that difficult niche. Suppresses weeds year-round and needs almost no maintenance.'},
+{n:'Lily of the Valley',l:'Convallaria majalis',t:'Perennial',s:'Apr–May',o:'One of the finest fragrant plants for deep shade. Spreads via rhizomes to fill a narrow bed beautifully. Belfast\'s cool, moist climate is perfect for it — it grows well without any extra watering and produces excellent fragrance in cool conditions.'},
+{n:'Epimedium',l:'Epimedium x versicolor "Sulphureum"',t:'Ground cover',s:'Mar–May (leaves year-round)',o:'Tough and drought-tolerant under hedge roots where competition for moisture is fierce. Heart-shaped leaves with small yellow spring flowers. Semi-evergreen, providing winter interest in the narrow strip. One of the best plants for difficult dry shade.'},
+{n:'Cyclamen',l:'Cyclamen hederifolium',t:'Corm',s:'Sep–Nov',o:'Autumn flowers — pink and white — arriving when almost nothing else blooms in deep shade. Excellent under the hedge roots where it tolerates dry conditions. The beautifully marbled ivy-shaped leaves persist through winter and into spring, giving ground cover long after the flowers finish.'}
 ]},
-baywindow:{a:'North-facing house wall · deepest shade · Belfast · mild maritime climate',i:'The north-facing house wall receives essentially no direct sun at Belfast\'s latitude. However Belfast\'s mild, moist climate opens up excellent options that wouldn\'t survive a colder inland UK winter. The key is evergreen structure that looks good year-round, seen from inside the living room and from the street.',p:[
-{n:'Camellia',l:'Camellia x williamsii "Donation"',t:'Shrub',s:'Feb–Apr',o:'Outstanding for this position in Belfast. The north wall\'s consistent shade suits camellias perfectly, and Belfast\'s mild winters mean the spectacular semi-double pink blooms rarely get frost-damaged.'},
-{n:'Fatsia',l:'Fatsia japonica',t:'Shrub',s:'Year-round',o:'Bold, glossy, tropical-looking leaves that handle north-facing deep shade better than almost any other shrub. Belfast\'s mild maritime winters mean it rarely suffers.'},
-{n:'Skimmia',l:'Skimmia japonica "Rubella"',t:'Shrub',s:'Winter & spring',o:'Deep red buds held all through winter, opening to fragrant white flowers in spring. Compact, evergreen, and supremely reliable on a north wall.'},
-{n:'Mahonia',l:'Mahonia x media "Charity"',t:'Shrub',s:'Nov–Mar',o:'Architectural spiky foliage and intensely fragrant yellow flower spikes from November to March. Handles deep north-facing shade and Belfast\'s damp winters exceptionally well.'}
+efence:{a:'East boundary fence (4ft) · 30cm deep along most of its length · 110cm pocket in SE corner · very deep shade · Belfast',i:'The east fence bed runs from the brick pillar at the north down to the E-W gate fence. Along most of its length the bed is only 30cm deep — a narrow strip that limits planting to compact plants. The exception is the south-east corner where it meets the side fence: here the depth opens out to about 110cm, giving a proper pocket for the camellia. The beds are in very deep shade from the 2-storey house, with the 4ft east fence adding to this by blocking low morning sun. The year-round foliage backbone here is strong: camellia (fully evergreen), hart\'s tongue fern (evergreen), hellebore (semi-evergreen, holding leaves through winter), heuchera (evergreen foliage all year), and soft shield fern (evergreen). This bed should look furnished in every month.',p:[
+{n:'Camellia',l:'Camellia japonica "Adolphe Audusson"',t:'Wall shrub',s:'Feb–Apr',o:'Best planted in the SE corner pocket where there\'s 110cm of depth and shelter from both fences — room to establish and a protected spot for the early blooms. Belfast is one of the best places in the UK to grow camellias. The shade here suits them perfectly, Belfast\'s mild winters protect the buds, and Ireland\'s acid soils are ideal.'},
+{n:'Hellebore',l:'Helleborus x hybridus (mixed)',t:'Perennial',s:'Jan–Apr',o:'Compact and perfectly suited to the narrow 30cm sections — clumps stay tight and add colour from January in conditions most plants would refuse. Belfast\'s cool, moist climate is textbook for hellebores.'},
+{n:'Heuchera',l:'Heuchera "Plum Pudding"',t:'Perennial',s:'Year-round foliage · Jun flowers',o:'Rich purple-plum leaves with a silver-metallic sheen — striking year-round foliage in front of the fence panels where bare patches in winter would be most obvious. Stays compact and tidy within the 30cm bed, producing small white flower spikes in early summer. Much better value than astilbe for this bed because it never disappears.'},
+{n:'Soft Shield Fern',l:'Polystichum setiferum',t:'Fern',s:'Year-round',o:'An elegantly feathery evergreen fern — different in character from the hart\'s tongue fern, with finely divided arching fronds that add a delicate texture to the narrow bed. Stays compact enough for the 30cm sections. Combined with the hart\'s tongue fern this gives two very different fern textures side by side, both evergreen, covering the ground in front of the fence throughout the year. Thrives in Belfast\'s mild, moist climate.'},
+{n:'Hart\'s Tongue Fern',l:'Asplenium scolopendrium',t:'Fern',s:'Year-round',o:'A compact evergreen fern that stays tidily within a 30cm bed — much better suited to the narrow sections than a male fern. Glossy strap-like fronds provide year-round structure in deep shade. Thrives in Belfast\'s mild, wet maritime climate and looks superb beside hellebores.'}
 ]},
-porch:{a:'NE corner of house · north-facing · sheltered · Belfast — famous for fuchsias',i:'The porch is at the NE corner, a third of the house width, with the brick pillar just visible to the north. North-facing and sheltered — exactly the conditions where Belfast\'s maritime climate gives a real advantage. Fuchsias are legendary in Ireland, often surviving outdoors year-round in sheltered positions.',p:[
-{n:'Fuchsia',l:'Fuchsia "Ballet Girl"',t:'Often overwinters outdoors in Belfast',s:'Jun–Oct (or longer)',o:'Belfast\'s mild maritime climate means fuchsias often survive outdoors year-round in sheltered positions. In Ireland they grow to a size rarely seen in mainland Britain. Ballet Girl has extraordinary double flowers in white and pink.'},
-{n:'Trailing Begonia',l:'Begonia x tuberhybrida pendula',t:'Tender perennial',s:'Jun–Oct',o:'Genuinely prefer a shaded position — a north-facing Belfast porch is ideal. The cool, moist summers suit them and prevent the flower scorching seen in hotter climates.'},
-{n:'Hydrangea in pot',l:'Hydrangea macrophylla "Endless Summer"',t:'Shrub in pot',s:'Jun–Sep',o:'Hydrangeas flourish in Belfast\'s cool, moist climate like almost nowhere else. A repeat-flowering mophead in a generous pot handles the north light and looks spectacular.'},
+baywindow:{a:'North-facing · raised porch step · seasonal bulb lasagne pots · sheltered · Belfast',i:'The raised porch step is ideal for a seasonal pot display built around bulb lasagnes — layering different bulbs at different depths in the same pot so they come up in sequence, giving you a rolling spring display from a single container. In autumn, plant the largest bulbs deepest, then layer smaller ones above, finishing with the shallowest at the top. In a north-facing Belfast porch the sequence runs from January through to May or June; when the bulbs finish, lift the pot out, let the foliage die back, store the bulbs somewhere cool and dry, and bring in summer shade bedding to take over. The cards below show the layering sequence — plant them all in the same pot in autumn.',p:[
+{n:'Bottom layer — Tulips',l:'Tulipa "Queen of Night" or "Apricot Beauty"',t:'Bulb · plant 15–18cm deep',s:'Apr–May',o:'The last to flower and the deepest in the pot. Dark "Queen of Night" or soft "Apricot Beauty" both perform better than most tulips in lower light. Plant nose-up, 15–18cm down from the surface. These anchor the pot display and give the grand finale.'},
+{n:'Middle layer — Miniature Daffodils',l:'Narcissus "Tête-à-Tête" or "Jetfire"',t:'Bulb · plant 10–12cm deep',s:'Mar–Apr',o:'Small daffodils are among the most reliable bulbs for lower-light positions. "Tête-à-Tête" (yellow) or "Jetfire" (yellow with swept-back petals) both tolerate a north-facing porch well. Plant above the tulip layer, 10–12cm from the surface. They flower 3–4 weeks before the tulips.'},
+{n:'Upper layer — Grape Hyacinth',l:'Muscari armeniacum',t:'Bulb · plant 5–7cm deep',s:'Mar–Apr',o:'Cobalt-blue spikes that flower alongside the daffodils and last for weeks. Very compact and shallow-rooting — perfect for the top layer of the lasagne. The blue of the muscari against yellow daffodils is a classic combination. Plant just 5–7cm below the surface.'},
+{n:'Top layer — Snowdrops',l:'Galanthus nivalis (plant in the green)',t:'Bulb · plant just below surface',s:'Jan–Mar',o:'The very first to emerge, sometimes in January. Buy and plant snowdrops "in the green" (with foliage attached) in early spring for reliable establishment — dry bulbs in autumn rarely succeed. Tuck them in just below the surface above everything else. They mark the start of the sequence while the layers beneath are still sleeping.'},
+{n:'Summer swap-in',l:'Begonia x tuberhybrida (upright) or Impatiens "Beacon"',t:'Annual bedding',s:'Jun–Oct',o:'When the lasagne finishes in May or June, lift the pot and store the bulbs somewhere cool and dry for replanting in autumn. Swap in summer shade bedding — upright begonias or mildew-resistant busy lizzies are the best choices for a north-facing sheltered porch in Belfast. They give colour all the way through to the first frosts.'}
+]},
+porch:{a:'NE corner of house · north-facing · sheltered · baskets + pots · Belfast',i:'The porch is at the NE corner, a third of the house width, with the brick pillar just visible to the north. North-facing and sheltered — exactly the conditions where Belfast\'s maritime climate gives a real advantage. The cool, moist summers mean shade-tolerant plants perform better here than in most of the UK.',p:[
+{n:'Camellia in pot',l:'Camellia x williamsii "Jury\'s Yellow"',t:'Shrub in pot',s:'Feb–Apr',o:'An unusual cream-yellow camellia that flowers in late winter when the porch is at its most bare. Belfast\'s mild winters are outstanding for camellias in containers — the blooms rarely get frost-damaged. Grow in ericaceous compost and keep in the sheltered porch corner.'},
+{n:'Trailing Begonia',l:'Begonia x tuberhybrida pendula',t:'Tender perennial',s:'Jun–Oct',o:'Genuinely prefer a shaded position — a north-facing Belfast porch is ideal for hanging baskets. The cool, moist summers suit them and prevent the flower scorching seen in hotter climates. Tuberous — store indoors over winter.'},
+{n:'Hydrangea in pot',l:'Hydrangea macrophylla "Annabelle"',t:'Shrub in pot',s:'Jun–Sep',o:'Hydrangeas flourish in Belfast\'s cool, moist climate like almost nowhere else. A large-headed white mophead in a generous pot handles the north light and looks spectacular through summer.'},
 {n:'Trailing Ivy',l:'Hedera helix "Golden Child"',t:'Evergreen',s:'Year-round',o:'Gold-variegated year-round structural spiller for the hanging baskets. Provides continuity between seasonal changes and looks good in winter when tender plants come inside.'},
 {n:'Busy Lizzie',l:'Impatiens walleriana (mildew-resistant)',t:'Annual',s:'Jun–Oct',o:'Continuous colour in deep shade all summer. Choose a mildew-resistant variety — Belfast\'s high humidity can cause problems with older strains. Modern series like "Beacon" have much better resistance.'}
 ]},
@@ -299,7 +337,7 @@ lawn:{a:'South-facing open lawn · best light in garden · Belfast maritime clim
 {n:'Japanese Maple',l:'Acer palmatum "Dissectum Garnet"',t:'Tree in pot',s:'Spring–Autumn',o:'Weeping, finely-cut burgundy foliage turning brilliant scarlet in October. Position with some shelter from the west hedge. Belfast\'s mild winters rarely cause the frost damage seen in colder UK gardens.'},
 {n:'Miscanthus',l:'Miscanthus sinensis "Morning Light"',t:'Ornamental grass',s:'Summer–winter',o:'Elegant grass that moves beautifully in Belfast\'s frequent breezes. Extraordinary seedheads persist through the mild winter providing structure when other plants have died back.'},
 {n:'Honeysuckle',l:'Lonicera periclymenum "Serotina"',t:'Climber on fence',s:'Jun–Oct',o:'Train along the south fence. Belfast\'s cool, moist climate is ideal — the evening fragrance is extraordinary, and in cool conditions the flowers last far longer than in hot summers.'},
-{n:'Crocosmia',l:'Crocosmia "Lucifer"',t:'Corm',s:'Jul–Sep',o:'Vivid flame-red arching sprays. So well-suited to Belfast\'s mild, moist maritime climate that it has naturalised across much of Ireland. Almost zero maintenance once established.'}
+{n:'Hydrangea',l:'Hydrangea paniculata "Limelight"',t:'Shrub in pot',s:'Jul–Sep',o:'A spectacular panicle hydrangea — large conical flower heads start lime-green, turn white, then blush pink into autumn. Handles the open south-facing aspect well and is among the most reliable hydrangeas in Belfast\'s climate.'}
 ]}
 };
 
@@ -307,19 +345,81 @@ var cur=null;
 function sel(id){
   if(cur){
     var pe=document.getElementById('mz-'+cur);
-    if(pe){var pr=pe.querySelector('rect');if(pr&&pr.dataset.os!==undefined){pr.setAttribute('stroke',pr.dataset.os);pr.setAttribute('stroke-width',pr.dataset.ow);}}
+    if(pe){var pr=pe.querySelector('rect,polygon');if(pr&&pr.dataset.os!==undefined){pr.setAttribute('stroke',pr.dataset.os);pr.setAttribute('stroke-width',pr.dataset.ow);}}
     document.querySelectorAll('.zpill').forEach(function(b){b.classList.remove('on');});
   }
   cur=id;
   var el=document.getElementById('mz-'+id);
-  if(el){var r=el.querySelector('rect');if(r){if(r.dataset.os===undefined){r.dataset.os=r.getAttribute('stroke')||'none';r.dataset.ow=r.getAttribute('stroke-width')||'0.5';}r.setAttribute('stroke','#BA7517');r.setAttribute('stroke-width','2.5');}}
+  if(el){var r=el.querySelector('rect,polygon');if(r){if(r.dataset.os===undefined){r.dataset.os=r.getAttribute('stroke')||'none';r.dataset.ow=r.getAttribute('stroke-width')||'0.5';}r.setAttribute('stroke','#BA7517');r.setAttribute('stroke-width','2.5');}}
   document.querySelectorAll('.zpill[data-z="'+id+'"]').forEach(function(b){b.classList.add('on');});
   var z=zones.find(function(z){return z.id===id;});
   var d=D[id];
   document.getElementById('em').style.display='none';
   var zc=document.getElementById('zc');
   zc.style.display='block';
-  zc.innerHTML='<div class="zone-header"><div class="zname">'+z.name+'</div><div class="zaspect">'+d.a+'</div><div class="zintro">'+d.i+'</div></div><div class="plants-label">Recommended plants</div><div class="plant-grid">'+d.p.map(function(p){return '<div class="pcard"><div class="pname">'+p.n+'</div><div class="platin">'+p.l+'</div><span class="pbadge ptype">'+p.t+'</span><span class="pbadge pseas">'+p.s+'</span><div class="pnote">'+p.o+'</div></div>';}).join('')+'</div>';
+  zc.innerHTML='<div class="zone-header"><div class="zname">'+z.name+'</div><div class="zaspect">'+d.a+'</div><div class="zintro">'+d.i+'</div></div><div class="plants-label">Recommended plants</div><div class="plant-grid">'+d.p.map(function(p){return '<div class="pcard" data-latin="'+p.l.replace(/"/g,"&quot;")+'"><div class="pimg-wrap shimmer"><img class="pimg" alt="'+p.n+'"></div><div class="pcard-body"><div class="pname">'+p.n+'</div><div class="platin">'+p.l+'</div><span class="pbadge ptype">'+p.t+'</span><span class="pbadge pseas">'+p.s+'</span><div class="pnote">'+p.o+'</div></div></div>';}).join('')+'</div>';
+  // Fetch plant images: wiki species → wiki genus → commons species → commons genus → placeholder
+  // Override table: genus names that hit Wikipedia disambiguation pages or illustration-heavy articles
+  var wikiAlt={'Rosa':'Rose','Narcissus':'Narcissus_(plant)','Helleborus':'Helleborus_orientalis'};
+  function loadPlantImg(card){
+    var latin=card.dataset.latin;
+    var words=latin
+      .replace(/["'\u2018\u2019\u201c\u201d].*$/,'')
+      .replace(/\bor\b.*$/i,'')
+      .replace(/\(.*?\)/g,'')
+      .replace(/\bx\b/g,'')
+      .replace(/[,·]/g,'')
+      .trim().split(/\s+/)
+      .filter(function(w){return w.length>1&&!/^(var|subsp|f|cv)\.?$/i.test(w);});
+    var genus=words[0]||'';
+    var species=words.slice(0,2).join('_');
+    if(!genus)return;
+    var wrap=card.querySelector('.pimg-wrap');
+    var img=card.querySelector('.pimg');
+    var queue=[];
+    if(species&&species!==genus)queue.push('wiki\t'+species);
+    if(wikiAlt[genus])queue.push('wiki\t'+wikiAlt[genus]);
+    queue.push('wiki\t'+genus);
+    if(species&&species!==genus)queue.push('commons\t'+words.slice(0,2).join(' '));
+    queue.push('commons\t'+genus);
+    function next(){
+      if(!queue.length){placeholder();return;}
+      var parts=queue.shift().split('\t');
+      parts[0]==='wiki'?wikiImg(parts[1]):commonsImg(parts[1]);
+    }
+    function showImg(src){
+      img.onload=function(){img.classList.add('loaded');wrap.classList.remove('shimmer');};
+      img.onerror=function(){next();};
+      img.src=src;
+    }
+    function wikiImg(name){
+      fetch('https://en.wikipedia.org/w/api.php?action=query&titles='+encodeURIComponent(name)+'&prop=pageimages&format=json&pithumbsize=400&redirects=1&origin=*')
+        .then(function(r){return r.json();})
+        .then(function(d){
+          var p=d.query&&d.query.pages&&Object.values(d.query.pages)[0];
+          if(p&&p.thumbnail&&p.thumbnail.source)showImg(p.thumbnail.source);else next();
+        }).catch(next);
+    }
+    function commonsImg(name){
+      fetch('https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrnamespace=6&gsrsearch='+encodeURIComponent(name)+'&prop=imageinfo&iiprop=url&iiurlwidth=400&format=json&origin=*&gsrlimit=16')
+        .then(function(r){return r.json();})
+        .then(function(d){
+          var pages=d.query&&d.query.pages;
+          if(!pages){next();return;}
+          var src=null;
+          Object.values(pages).some(function(p){
+            if(p.imageinfo&&p.imageinfo[0]){
+              var u=p.imageinfo[0].thumburl||p.imageinfo[0].url;
+              if(u&&/\.(jpg|jpeg|png)$/i.test(u)&&!/diagram|map|distribution|range|chart|icon|logo|illustration|drawing|litho|engraving|kunstform|k.hler|bot_|watercolor|aquarell/i.test(u)){src=u;return true;}
+            }
+          });
+          if(src)showImg(src);else next();
+        }).catch(next);
+    }
+    function placeholder(){wrap.classList.remove('shimmer');wrap.classList.add('ph');wrap.innerHTML='<span class="ph-icon">🌿</span>';}
+    next();
+  }
+  zc.querySelectorAll('.pcard[data-latin]').forEach(loadPlantImg);
   // scroll info into view on mobile
   if(window.innerWidth<680){
     setTimeout(function(){document.querySelector('.right-col').scrollIntoView({behavior:'smooth',block:'start'});},100);
